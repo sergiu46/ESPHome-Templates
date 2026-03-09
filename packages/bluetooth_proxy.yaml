@@ -6,8 +6,6 @@ esp32:
   framework:
     type: esp-idf
     sdkconfig_options:
-      # Prioritize Bluetooth stability over high WiFi throughput
-      CONFIG_BT_CTRL_DFT_TX_Pwr: "9"
       CONFIG_BT_RESERVE_DRAM_ONLY: "y"
       # Enable WiFi/BLE coexistence
       CONFIG_ESP32_WIFI_SW_COEXIST_ENABLE: "y"
