@@ -10,11 +10,31 @@ esp32:
       # Enable WiFi/BLE coexistence
       CONFIG_ESP32_WIFI_SW_COEXIST_ENABLE: "y"
 
+bluetooth_proxy:
+  active: false
+
 esp32_ble_tracker:
   scan_parameters:
     active: false
     interval: 1100ms
     window: 1100ms
+  on_ble_advertise:
+    then:
+      - binary_sensor.template.publish:
+          id: ble_activity_monitor
+          state: ON
 
-bluetooth_proxy:
-  active: false
+binary_sensor:
+  - platform: template
+    id: ble_activity_monitor
+    name: "BLE Activity Watchdog"
+    internal: false
+    disabled_by_default: true
+    filters:
+      - delayed_off: 5min
+    on_release:
+      then:
+        - logger.log: "No BLE traffic. Triggering restart button..."
+        - button.press: restart_button
+
+
