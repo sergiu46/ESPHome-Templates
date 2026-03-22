@@ -11,7 +11,7 @@ esp32:
       CONFIG_ESP32_WIFI_SW_COEXIST_ENABLE: "y"
 
 bluetooth_proxy:
-  active: true
+  active: false
 
 globals:
   - id: last_ble_time
@@ -20,9 +20,9 @@ globals:
 
 esp32_ble_tracker:
   scan_parameters:
-    active: true
-    interval: 150ms
-    window: 120ms
+    active: false
+    interval: 1100ms
+    window: 1100ms
   on_ble_advertise:
     then:
       - lambda: 'id(last_ble_time) = millis();'
