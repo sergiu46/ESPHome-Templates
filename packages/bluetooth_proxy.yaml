@@ -6,17 +6,33 @@ esp32:
   framework:
     type: esp-idf
     sdkconfig_options:
-      # Prioritize Bluetooth stability over high WiFi throughput
-      CONFIG_BT_CTRL_DFT_TX_Pwr: "9"
       CONFIG_BT_RESERVE_DRAM_ONLY: "y"
       # Enable WiFi/BLE coexistence
       CONFIG_ESP32_WIFI_SW_COEXIST_ENABLE: "y"
+
+bluetooth_proxy:
+  active: false
+
+globals:
+  - id: last_ble_time
+    type: uint32_t
+    initial_value: '0'
 
 esp32_ble_tracker:
   scan_parameters:
     active: false
     interval: 1100ms
     window: 1100ms
+  on_ble_advertise:
+    then:
+      - lambda: 'id(last_ble_time) = millis();'
 
-bluetooth_proxy:
-  active: false
+interval:
+  - interval: 1min
+    then:
+      - lambda: |-
+          uint32_t timeout = 300000;
+          if (millis() > timeout && (millis() - id(last_ble_time) > timeout)) {
+            ESP_LOGW("watchdog", "No BLE traffic for 5 minutes. Triggering restart.");
+            id(restart_button).press();
+          }
