@@ -13,6 +13,11 @@ esp32:
 bluetooth_proxy:
   active: true
 
+globals:
+  - id: last_ble_time
+    type: uint32_t
+    initial_value: '0'
+
 esp32_ble_tracker:
   scan_parameters:
     active: true
@@ -20,19 +25,14 @@ esp32_ble_tracker:
     window: 120ms
   on_ble_advertise:
     then:
-      - binary_sensor.template.publish:
-          id: ble_activity_monitor
-          state: ON
+      - lambda: 'id(last_ble_time) = millis();'
 
-binary_sensor:
-  - platform: template
-    id: ble_activity_monitor
-    name: "BLE Activity Watchdog"
-    internal: false
-    disabled_by_default: true
-    filters:
-      - delayed_off: 5min
-    on_release:
-      then:
-        - logger.log: "No BLE traffic. Triggering restart button..."
-        - button.press: restart_button
+interval:
+  - interval: 1min
+    then:
+      - lambda: |-
+          uint32_t timeout = 300000;
+          if (millis() > timeout && (millis() - id(last_ble_time) > timeout)) {
+            ESP_LOGW("watchdog", "No BLE traffic for 5 minutes. Triggering restart.");
+            id(restart_button).press();
+          }
