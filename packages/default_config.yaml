@@ -32,6 +32,7 @@ ota:
 
 web_server:
   port: 80
+  ota: false
   auth:
     username: ${name}
     password: ${password}
