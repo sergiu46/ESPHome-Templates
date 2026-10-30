@@ -35,6 +35,7 @@ web_server:
   auth:
     username: ${name}
     password: ${password}
+    type: digest
 
 button:
   # Restart Button
