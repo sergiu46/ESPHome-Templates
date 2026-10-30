@@ -22,7 +22,7 @@ api:
 
 ota:
   platform: esphome
-  password: ${password}
+  encryption:
 
 button:
   # Restart Button
