@@ -28,7 +28,7 @@ api:
 
 ota:
   platform: esphome
-  password: ${password}
+  encryption:
 
 web_server:
   port: 80
